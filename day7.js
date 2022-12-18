@@ -117,8 +117,29 @@ function part1(data) {
             final_result += dir_size[final_size];
         }
     }
-    console.log("Result is : ".concat(final_result));
+    console.log("Part1 result is : ".concat(final_result));
 }
 function part2(data) {
+    var final_result = 9999999999;
+    var dir_size = {};
+    var files = parse(input);
+    var subtrees = build_subdirs(files);
+    for (var key in subtrees) {
+        var size = 0;
+        size = total_filesize(key, files);
+        for (var _i = 0, _a = subtrees[key]; _i < _a.length; _i++) {
+            var dir = _a[_i];
+            size += total_filesize(dir, files);
+        }
+        dir_size[key] = size;
+    }
+    console.log(JSON.stringify(dir_size));
+    for (var final_size in dir_size) {
+        if (dir_size[final_size] >= 8381165 && dir_size[final_size] < final_result) {
+            final_result = dir_size[final_size];
+        }
+    }
+    console.log("Part2 result is : ".concat(final_result));
 }
-part1(input);
+//part1(input);
+part2(input);
