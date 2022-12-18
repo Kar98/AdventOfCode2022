@@ -12,12 +12,15 @@ function go_up(path: string){
             return val;
         }
     }
+    return '/';
 }
 
-function part1(data: string[]){
+
+function parse(data: string[]){
     let linenum = 0;
     let path = '';
     let files = {'/': []};
+    
     for(const line of data){
         linenum++;
         if(line.at(0) == '$'){
@@ -57,9 +60,62 @@ function part1(data: string[]){
         }
         console.log(linenum);
     }
-    
+    return files;
     console.log('path : '+path);
     console.log('files : '+JSON.stringify(files));
+}
+
+function build_subdirs(tree) {
+    let struct = {};
+    for (var k in tree) {
+        if(k == '/'){
+            // skip
+        }else{
+            struct[k] = []
+            for(var sub in tree){
+                if(sub != k && sub.startsWith(k)){
+                    struct[k].push(sub);
+                }
+            }
+        }
+    }
+    return struct;
+}
+
+function total_filesize(directory: string, fullset: {}){
+    let size = 0;
+    for(const item in fullset){
+        if(item == directory){
+            let files = fullset[item];
+            for(let v of files){
+                let num = (v.split(' '))[0];
+                size = size + parseInt(num);
+            }
+        }
+    }
+    return size;
+}
+function part1(data){
+    let final_result = 0;
+    var dir_size = {}
+    var files = parse(input);
+    var subtrees = build_subdirs(files);
+    for(let key in subtrees){
+        let size = 0;
+        size = total_filesize(key, files);
+        for(let dir of subtrees[key]){
+            size+=total_filesize(dir, files);
+        }
+        dir_size[key] = size;
+    }
+
+    for(const final_size in dir_size){
+        
+        if(dir_size[final_size] <= 100000){
+            final_result +=dir_size[final_size];
+        }
+    }
+    console.log(`Result is : ${final_result}`);
 }
 
 function part2(data){

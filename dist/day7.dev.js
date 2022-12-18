@@ -18,12 +18,13 @@ function go_up(path) {
       return val;
     }
   }
+
+  return '/';
 }
 
-function part1(data) {
+function parse(data) {
   var linenum = 0;
   var path = '';
-  var current_dir = '';
   var files = {
     '/': []
   };
@@ -32,10 +33,6 @@ function part1(data) {
     var line = data_1[_i];
     linenum++;
 
-    if (linenum == 115) {
-      console.log();
-    }
-
     if (line.at(0) == '$') {
       // User command
       if (line.includes('$ cd')) {
@@ -43,7 +40,6 @@ function part1(data) {
 
         if (dir == '..') {
           // go up
-          console.log('.. found');
           path = go_up(path);
         } else if (dir == '/') {
           // go to root
@@ -51,7 +47,6 @@ function part1(data) {
         } else {
           // go in
           path += dir + '/';
-          current_dir = dir;
         }
       } else if (line.includes('$ ls')) {//
       }
@@ -77,10 +72,32 @@ function part1(data) {
     console.log(linenum);
   }
 
+  return files;
   console.log('path : ' + path);
   console.log('files : ' + JSON.stringify(files));
 }
 
+function build_subdirs(tree) {
+  var struct = {};
+
+  for (var k in tree) {
+    if (k == '/') {// skip
+    } else {
+      struct[k] = [];
+
+      for (var sub in tree) {
+        if (sub != k && sub.startsWith(k)) {
+          struct[k].push(sub);
+        }
+      }
+    }
+  }
+
+  return struct;
+}
+
 function part2(data) {}
 
-part1(input);
+var parsed = parse(input);
+var subtrees = build_subdirs(parsed);
+console.log(JSON.stringify(subtrees));

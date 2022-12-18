@@ -12,8 +12,9 @@ function go_up(path) {
             return val;
         }
     }
+    return '/';
 }
-function part1(data) {
+function parse(data) {
     var linenum = 0;
     var path = '';
     var files = { '/': [] };
@@ -26,7 +27,6 @@ function part1(data) {
                 var dir = (line.split('$ cd '))[1];
                 if (dir == '..') {
                     // go up
-                    console.log('.. found');
                     path = go_up(path);
                 }
                 else if (dir == '/') {
@@ -63,8 +63,61 @@ function part1(data) {
         }
         console.log(linenum);
     }
+    return files;
     console.log('path : ' + path);
     console.log('files : ' + JSON.stringify(files));
+}
+function build_subdirs(tree) {
+    var struct = {};
+    for (var k in tree) {
+        if (k == '/') {
+            // skip
+        }
+        else {
+            struct[k] = [];
+            for (var sub in tree) {
+                if (sub != k && sub.startsWith(k)) {
+                    struct[k].push(sub);
+                }
+            }
+        }
+    }
+    return struct;
+}
+function total_filesize(directory, fullset) {
+    var size = 0;
+    for (var item in fullset) {
+        if (item == directory) {
+            var files = fullset[item];
+            for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
+                var v = files_1[_i];
+                var num = (v.split(' '))[0];
+                size = size + parseInt(num);
+            }
+        }
+    }
+    return size;
+}
+function part1(data) {
+    var final_result = 0;
+    var dir_size = {};
+    var files = parse(input);
+    var subtrees = build_subdirs(files);
+    for (var key in subtrees) {
+        var size = 0;
+        size = total_filesize(key, files);
+        for (var _i = 0, _a = subtrees[key]; _i < _a.length; _i++) {
+            var dir = _a[_i];
+            size += total_filesize(dir, files);
+        }
+        dir_size[key] = size;
+    }
+    for (var final_size in dir_size) {
+        if (dir_size[final_size] <= 100000) {
+            final_result += dir_size[final_size];
+        }
+    }
+    console.log("Result is : ".concat(final_result));
 }
 function part2(data) {
 }
