@@ -166,7 +166,6 @@ function part1(matrix) {
     return total_clear;
 }
 function part2(matrix) {
-    //let total_clear = 392; // 99 + 97 + 97 + 99 (all the edges of the box)
     var best_num = 0;
     for (var row = 1; row < matrix.length - 1; row++) {
         for (var col = 1; col < matrix[row].length - 1; col++) {

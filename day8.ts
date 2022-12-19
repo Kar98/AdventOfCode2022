@@ -175,7 +175,6 @@ function part1(matrix: number[][]){
 }
 
 function part2(matrix: number[][]){
-    //let total_clear = 392; // 99 + 97 + 97 + 99 (all the edges of the box)
     let best_num = 0;
     for(let row = 1;row < matrix.length-1;row++){
         for(let col = 1;col < matrix[row].length-1;col++){
