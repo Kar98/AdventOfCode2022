@@ -26,9 +26,7 @@ function load_matrix(data: string[]){
     return matrix;
 }
 
-
-
-function check_top(matrix: number[][], current: number[]){
+function view_top(matrix: number[][], current: number[]){
     let cur_row = current[0];
     let cur_col = current[1];
     let cur_num = matrix[cur_row][cur_col];
@@ -40,7 +38,7 @@ function check_top(matrix: number[][], current: number[]){
     return true;
 }
 
-function check_bot(matrix: number[][], current: number[]){
+function view_bot(matrix: number[][], current: number[]){
     let cur_row = current[0];
     let cur_col = current[1];
     let cur_num = matrix[cur_row][cur_col];
@@ -52,7 +50,7 @@ function check_bot(matrix: number[][], current: number[]){
     return true;
 }
 
-function check_right(matrix: number[][], current: number[]){
+function view_right(matrix: number[][], current: number[]){
     let cur_row = current[0];
     let cur_col = current[1];
     let cur_num = matrix[cur_row][cur_col];
@@ -64,7 +62,7 @@ function check_right(matrix: number[][], current: number[]){
     return true;
 }
 
-function check_left(matrix: number[][], current: number[]){
+function view_left(matrix: number[][], current: number[]){
     let cur_row = current[0];
     let cur_col = current[1];
     let cur_num = matrix[cur_row][cur_col];
@@ -76,21 +74,127 @@ function check_left(matrix: number[][], current: number[]){
     return true;
 }
 
-function part1(matrix: number[][]){
-    for(let row = 1;row < matrix.length;row++){
-        for(let col = 1;col < matrix[row].length;col++){
-            // If all to the right are > than num
-
-            // If all to the left are > than num
-            // If all to the top are > than num
-            // If all to the bottom are > than num
+function count_top(matrix: number[][], current: number[]){
+    let cur_row = current[0];
+    let cur_col = current[1];
+    let cur_num = matrix[cur_row][cur_col];
+    let score = 0;
+    for(let i = cur_row-1;i >= 0;i--){
+        if(cur_num > matrix[i][cur_col]){
+            score++;
+        }else{
+            score++;
+            return score;
         }
     }
+    return score;
 }
 
-let matrix = load_matrix(test1);
-//console.log(check_top(matrix, [3,4]));
-//console.log(check_bot(matrix, [3,4]));
-console.log(matrix[3][48]);
-console.log(check_right(matrix, [3,48]));
+function count_bot(matrix: number[][], current: number[]){
+    let cur_row = current[0];
+    let cur_col = current[1];
+    let cur_num = matrix[cur_row][cur_col];
+    let score = 0;
+    for(let i = cur_row+1;i < matrix_height;i++){
+        if(cur_num > matrix[i][cur_col]){
+            score++;
+        }else{
+            score++;
+            return score;
+        }
+    }
+    return score;
+}
+
+function count_right(matrix: number[][], current: number[]){
+    let cur_row = current[0];
+    let cur_col = current[1];
+    let cur_num = matrix[cur_row][cur_col];
+    let score = 0;
+    for(let i = cur_col+1;i < matrix_width;i++){
+        if(cur_num > matrix[cur_row][i]){
+            score++;
+        }else{
+            score++;
+            return score;
+        }
+    }
+    return score;
+}
+
+function count_left(matrix: number[][], current: number[]){
+    let cur_row = current[0];
+    let cur_col = current[1];
+    let cur_num = matrix[cur_row][cur_col];
+    let score = 0;
+    for(let i = cur_col-1;i >= 0;i--){
+        if(cur_num > matrix[cur_row][i]){
+            score++;
+        }else{
+            score++;
+            return score;
+        }
+    }
+    return score;
+}
+
+function check_all(matrix: number[][], current: number[]){
+    if(view_top(matrix,current)){
+        return true;
+    }
+    if(view_bot(matrix,current)){
+        return true;
+    }
+    if(view_right(matrix,current)){
+        return true;
+    }
+    if(view_left(matrix,current)){
+        return true;
+    }
+    return false;
+}
+
+function calc_score(matrix: number[][], current: number[]){
+    let top = count_top(matrix,current);
+    let bot = count_bot(matrix,current);
+    let right = count_right(matrix,current);
+    let left = count_left(matrix,current);
+    return top * bot * right * left;
+}
+
+function part1(matrix: number[][]){
+    let total_clear = 392; // 99 + 97 + 97 + 99 (all the edges of the box)
+    for(let row = 1;row < matrix.length-1;row++){
+        for(let col = 1;col < matrix[row].length-1;col++){
+            if(check_all(matrix, [row,col])){
+                total_clear++;
+            }
+        }
+    }
+    return total_clear;
+}
+
+function part2(matrix: number[][]){
+    //let total_clear = 392; // 99 + 97 + 97 + 99 (all the edges of the box)
+    let best_num = 0;
+    for(let row = 1;row < matrix.length-1;row++){
+        for(let col = 1;col < matrix[row].length-1;col++){
+            let current_score = calc_score(matrix,[row,col]);
+            if(current_score > best_num){
+                best_num = current_score;
+            }
+        }
+    }
+    return best_num;
+}
+
+let matrix = load_matrix(input);
+let res = part1(matrix);
+let res2 = part2(matrix);
+console.log(`Total height ${matrix_height} . Total width ${matrix_width}`);
+console.log(`Total calced in clear ${res}`);
+
+console.log(`Best score ${res2}`);
+
+
 

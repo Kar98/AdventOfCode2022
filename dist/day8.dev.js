@@ -33,7 +33,7 @@ function load_matrix(data) {
   return matrix;
 }
 
-function check_top(matrix, current) {
+function view_top(matrix, current) {
   var cur_row = current[0];
   var cur_col = current[1];
   var cur_num = matrix[cur_row][cur_col];
@@ -47,7 +47,7 @@ function check_top(matrix, current) {
   return true;
 }
 
-function check_bot(matrix, current) {
+function view_bot(matrix, current) {
   var cur_row = current[0];
   var cur_col = current[1];
   var cur_num = matrix[cur_row][cur_col];
@@ -61,9 +61,21 @@ function check_bot(matrix, current) {
   return true;
 }
 
-function check_right(matrix, current) {}
+function view_right(matrix, current) {
+  var cur_row = current[0];
+  var cur_col = current[1];
+  var cur_num = matrix[cur_row][cur_col];
 
-function check_left(matrix, current) {
+  for (var i = cur_col + 1; i < matrix_width; i++) {
+    if (cur_num <= matrix[cur_row][i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function view_left(matrix, current) {
   var cur_row = current[0];
   var cur_col = current[1];
   var cur_num = matrix[cur_row][cur_col];
@@ -77,18 +89,89 @@ function check_left(matrix, current) {
   return true;
 }
 
-function part1(matrix) {
-  for (var row = 1; row < matrix.length; row++) {
-    for (var col = 1; col < matrix[row].length; col++) {// If all to the right are > than num
-      // If all to the left are > than num
-      // If all to the top are > than num
-      // If all to the bottom are > than num
+function count_top(matrix, current) {
+  var cur_row = current[0];
+  var cur_col = current[1];
+  var cur_num = matrix[cur_row][cur_col];
+  var score = 0;
+
+  for (var i = cur_row - 1; i >= 0; i--) {
+    var tmp = matrix[i][cur_col];
+
+    if (cur_num > matrix[i][cur_col]) {
+      score++;
+    } else {
+      score++;
+      return score;
     }
   }
+
+  return score;
 }
 
-var matrix = load_matrix(test1); //console.log(check_top(matrix, [3,4]));
-//console.log(check_bot(matrix, [3,4]));
+function count_bot(matrix, current) {
+  var cur_row = current[0];
+  var cur_col = current[1];
+  var cur_num = matrix[cur_row][cur_col];
+  var score = 0; //for
 
-console.log(matrix[3][38]);
-console.log(check_left(matrix, [3, 38]));
+  return score;
+}
+
+function count_right(matrix, current) {
+  var cur_row = current[0];
+  var cur_col = current[1];
+  var cur_num = matrix[cur_row][cur_col];
+  var score = 0; //for
+
+  return score;
+}
+
+function count_left(matrix, current) {
+  var cur_row = current[0];
+  var cur_col = current[1];
+  var cur_num = matrix[cur_row][cur_col];
+  var score = 0; //for
+
+  return score;
+}
+
+function check_all(matrix, current) {
+  if (view_top(matrix, current)) {
+    return true;
+  }
+
+  if (view_bot(matrix, current)) {
+    return true;
+  }
+
+  if (view_right(matrix, current)) {
+    return true;
+  }
+
+  if (view_left(matrix, current)) {
+    return true;
+  }
+
+  return false;
+}
+
+function part1(matrix) {
+  var total_clear = 392; // 99 + 97 + 97 + 99 (all the edges of the box)
+
+  for (var row = 1; row < matrix.length - 1; row++) {
+    for (var col = 1; col < matrix[row].length - 1; col++) {
+      if (check_all(matrix, [row, col])) {
+        total_clear++;
+      }
+    }
+  }
+
+  return total_clear;
+}
+
+var matrix = load_matrix(test1);
+var res = part1(matrix); //console.log(`Total height ${matrix_height} . Total width ${matrix_width}`);
+//console.log(`Total calced in clear ${res}`);
+
+console.log(count_top(matrix, [3, 4]));
