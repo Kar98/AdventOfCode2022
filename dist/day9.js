@@ -2,13 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var fs = require("fs");
 var input = fs.readFileSync('day9.txt', 'utf8').split('\r\n');
-var test = input.slice(0, 5);
-var matrix_height = 350;
-var matrix_width = 350;
-var m_start_r = 170;
-var m_start_c = 170;
-var matrix = load_matrix(test);
-function load_matrix(data) {
+var test = [{ direction: 'U', moves: 5 }, { direction: 'D', moves: 10 }];
+var matrix_height = 300;
+var matrix_width = 250;
+var m_start_r = 100;
+var m_start_c = 200;
+var matrix = load_matrix();
+function load_matrix() {
     // Instantiate the arrays
     var matrix = new Array(matrix_height);
     for (var i = 0; i < matrix.length; i++) {
@@ -33,9 +33,74 @@ function get_directions(data) {
     }
     return instructions;
 }
-function move_head(head, tail, dir) {
+function debug_move_head(head, tail, dir) {
     if (dir.direction == 'U') {
-        var head_char = matrix[head.row][head.col];
+        for (var i = 0; i < dir.moves; i++) {
+            head.row -= 1;
+            matrix[head.row][head.col] = 'H';
+            var diff = head.row - tail.row;
+            if (diff <= -2) {
+                matrix[tail.row][tail.col] = 'X';
+                if (tail.col != head.col) {
+                    tail.col = head.col;
+                }
+                tail.row -= 1;
+                matrix[tail.row][tail.col] = 'T';
+            }
+        }
+    }
+    if (dir.direction == 'D') {
+        for (var i = 0; i < dir.moves; i++) {
+            head.row += 1;
+            matrix[head.row][head.col] = 'H';
+            var diff = head.row - tail.row;
+            if (diff >= 2) {
+                matrix[tail.row][tail.col] = 'X';
+                if (tail.col != head.col) {
+                    tail.col = head.col;
+                }
+                tail.row += 1;
+                matrix[tail.row][tail.col] = 'T';
+            }
+        }
+    }
+    if (dir.direction == 'R') {
+        for (var i = 0; i < dir.moves; i++) {
+            head.col += 1;
+            matrix[head.row][head.col] = 'H';
+            var diff = head.col - tail.col;
+            if (diff >= 2) {
+                matrix[tail.row][tail.col] = 'X';
+                if (tail.row != head.row) {
+                    tail.row = head.row;
+                }
+                tail.col += 1;
+                matrix[tail.row][tail.col] = 'T';
+            }
+        }
+    }
+    if (dir.direction == 'L') {
+        for (var i = 0; i < dir.moves; i++) {
+            head.col -= 1;
+            matrix[head.row][head.col] = 'H';
+            var diff = head.col - tail.col;
+            if (diff <= -2) {
+                matrix[tail.row][tail.col] = 'X';
+                if (tail.row != head.row) {
+                    tail.row = head.row;
+                }
+                tail.col -= 1;
+                matrix[tail.row][tail.col] = 'T';
+            }
+        }
+    }
+    return [head, tail];
+}
+function move_head(head, tail, dir) {
+    if (head.row > 100) {
+        var tmp = 1;
+    }
+    if (dir.direction == 'U') {
         for (var i = 0; i < dir.moves; i++) {
             head.row -= 1;
             var diff = head.row - tail.row;
@@ -44,6 +109,7 @@ function move_head(head, tail, dir) {
                     tail.col = head.col;
                 }
                 tail.row -= 1;
+                //console.log(`T row ${tail.row} col ${tail.col}`);
                 matrix[tail.row][tail.col] = 'X';
             }
         }
@@ -57,6 +123,7 @@ function move_head(head, tail, dir) {
                     tail.col = head.col;
                 }
                 tail.row += 1;
+                //console.log(`T row ${tail.row} col ${tail.col}`);
                 matrix[tail.row][tail.col] = 'X';
             }
         }
@@ -70,6 +137,7 @@ function move_head(head, tail, dir) {
                     tail.row = head.row;
                 }
                 tail.col += 1;
+                //console.log(`T row ${tail.row} col ${tail.col}`);
                 matrix[tail.row][tail.col] = 'X';
             }
         }
@@ -83,6 +151,7 @@ function move_head(head, tail, dir) {
                     tail.row = head.row;
                 }
                 tail.col -= 1;
+                //console.log(`T row ${tail.row} col ${tail.col}`);
                 matrix[tail.row][tail.col] = 'X';
             }
         }
@@ -90,7 +159,7 @@ function move_head(head, tail, dir) {
     return [head, tail];
 }
 function count_visited() {
-    var total = 0;
+    var total = 1; // Starting point
     for (var row = 0; row < matrix_height; row++) {
         for (var col = 0; col < matrix_width; col++) {
             if (matrix[row][col] == 'X') {
@@ -120,11 +189,15 @@ function part1() {
     var dirs = get_directions(input);
     var tail_start = { row: m_start_r, col: m_start_c, visited: 1 };
     var head_start = { row: m_start_r, col: m_start_c, visited: 1 };
-    matrix[m_start_r][m_start_c] = 'S';
     print_matrix(matrix);
     clear_log();
     var tail = { row: m_start_r, col: m_start_c, visited: 1 };
     var head = { row: m_start_r, col: m_start_c, visited: 1 };
+    /*
+    for(let i = 0;i < 100;i++){
+        [head,tail] = move_head(head, tail, dirs[i]);
+    }
+    */
     for (var _i = 0, dirs_1 = dirs; _i < dirs_1.length; _i++) {
         var d = dirs_1[_i];
         _a = move_head(head, tail, d), head = _a[0], tail = _a[1];
