@@ -1,1 +1,4 @@
 node_modules/
+other_people/
+\.logs.txt
+.logs.txt
