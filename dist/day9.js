@@ -29,6 +29,7 @@ function load_matrix() {
             matrix[row][col] = '.';
         }
     }
+    matrix[m_start_r][m_start_c] = 'X'; // Set start position
     return matrix;
 }
 function clear_matrix() {
@@ -39,6 +40,7 @@ function clear_matrix() {
             matrix[row][col] = '.';
         }
     }
+    matrix[m_start_r][m_start_c] = 'X'; // Set start position
 }
 function get_directions(data) {
     var instructions = [];
@@ -325,6 +327,7 @@ function write_positions(agents) {
 }
 function part1() {
     var _a;
+    clear_matrix();
     var dirs = get_directions(input);
     clear_log();
     var tail = { row: m_start_r, col: m_start_c };
@@ -336,6 +339,7 @@ function part1() {
     console.log("Tail visited : " + count_visited());
 }
 function part2() {
+    clear_matrix();
     var dirs = get_directions(input);
     clear_log();
     var agents = [];
@@ -344,7 +348,6 @@ function part2() {
     }
     // Init start position
     //let tailidx = agents.length-1;
-    matrix[agents[0].row][agents[0].col] = 'X';
     for (var _i = 0, dirs_2 = dirs; _i < dirs_2.length; _i++) {
         var d = dirs_2[_i];
         agents = move_rope(agents, d);
@@ -355,5 +358,5 @@ function part2() {
     print_matrix(matrix);
 }
 // Number of positions visited
-//part1();
+part1();
 part2();
