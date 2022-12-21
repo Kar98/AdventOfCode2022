@@ -2,25 +2,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var fs = require("fs");
 var input = fs.readFileSync('day9.txt', 'utf8').split('\r\n');
-/*
-var testinput = `R 5
-U 8
-L 8
-D 3
-R 17
-D 10
-L 25
-U 20`;
-*/
-var test = "R 4\nU 4";
+var test1 = "R 5\nU 8\nL 8\nD 3\nR 17\nD 10\nL 25\nU 20";
+var test2 = "R 5\nU 8\nL 8\nD 3\nR 17\nD 10\nL 25\nU 20";
 /*
 var matrix_height = 300;
 var matrix_width = 250;
 var m_start_r = 100;
 var m_start_c = 200;
 */
-var matrix_height = 15;
-var matrix_width = 15;
+var matrix_height = 1000;
+var matrix_width = 1000;
 var m_start_r = Math.floor(matrix_height / 2);
 var m_start_c = Math.floor(matrix_width / 2);
 var matrix = load_matrix();
@@ -192,76 +183,75 @@ function in_range(f_agent, b_agent) {
     return true;
 }
 function move_rope(agents, dir) {
+    var tail_idx = agents.length - 1;
     if (dir.direction == 'U') {
-        for (var i = 0; i < dir.moves; i++) {
+        for (var d = 0; d < dir.moves; d++) {
             // Move head. 
             agents[0].row -= 1;
-            write_positions(agents);
             for (var a_idx = 0; a_idx < agents.length - 1; a_idx++) {
                 var front = agents[a_idx];
                 var back = agents[a_idx + 1];
                 // If back is out of range of front, then move back.
                 if (!in_range(front, back)) {
                     // If not same col, then move diagonally
+                    if (front.row != back.row) {
+                        var diff = (front.row > back.row) ? 1 : -1;
+                        back.row += diff;
+                    }
                     if (front.col != back.col) {
                         var diff = (front.col > back.col) ? 1 : -1;
                         back.col += diff;
-                        back.row -= 1;
                     }
-                    else {
-                        // Else just move the row
-                        back.row -= 1;
+                    if (a_idx + 1 == tail_idx) {
+                        matrix[back.row][back.col] = 'X';
                     }
-                }
-                write_positions(agents);
-                if (a_idx == 8) {
-                    matrix[back.row][back.col] = 'X';
                 }
             }
         }
     }
     if (dir.direction == 'D') {
-        for (var i = 0; i < dir.moves; i++) {
+        for (var d = 0; d < dir.moves; d++) {
             // Move head. 
-            agents[0].row -= 1;
-            write_positions(agents);
+            agents[0].row += 1;
             for (var a_idx = 0; a_idx < agents.length - 1; a_idx++) {
                 var front = agents[a_idx];
                 var back = agents[a_idx + 1];
                 // If back is out of range of front, then move back.
                 if (!in_range(front, back)) {
                     // If not same col, then move diagonally
+                    if (front.row != back.row) {
+                        var diff = (front.row > back.row) ? 1 : -1;
+                        back.row += diff;
+                    }
                     if (front.col != back.col) {
                         var diff = (front.col > back.col) ? 1 : -1;
                         back.col += diff;
-                        back.row += 1;
                     }
-                    else {
-                        // Else just move the row
-                        back.row += 1;
+                    if (a_idx + 1 == tail_idx) {
+                        matrix[back.row][back.col] = 'X';
                     }
-                }
-                write_positions(agents);
-                if (a_idx == 8) {
-                    matrix[back.row][back.col] = 'X';
                 }
             }
         }
     }
     if (dir.direction == 'R') {
-        for (var i = 0; i < dir.moves; i++) {
-            var head = agents[0];
-            head.col += 1;
+        for (var d = 0; d < dir.moves; d++) {
+            agents[0].col += 1;
             for (var a_idx = 0; a_idx < agents.length - 1; a_idx++) {
                 var front = agents[a_idx];
                 var back = agents[a_idx + 1];
-                var diff = front.col - back.col;
-                if (diff >= 2) {
-                    if (back.row != front.row) {
-                        back.row = front.row;
+                // If back is out of range of front, then move back.
+                if (!in_range(front, back)) {
+                    // If not same row, then move diagonally
+                    if (front.row != back.row) {
+                        var diff = (front.row > back.row) ? 1 : -1;
+                        back.row += diff;
                     }
-                    back.col += 1;
-                    if (a_idx == 8) {
+                    if (front.col != back.col) {
+                        var diff = (front.col > back.col) ? 1 : -1;
+                        back.col += diff;
+                    }
+                    if (a_idx + 1 == tail_idx) {
                         matrix[back.row][back.col] = 'X';
                     }
                 }
@@ -270,18 +260,22 @@ function move_rope(agents, dir) {
     }
     if (dir.direction == 'L') {
         for (var i = 0; i < dir.moves; i++) {
-            var head = agents[0];
-            head.col -= 1;
+            agents[0].col -= 1;
             for (var a_idx = 0; a_idx < agents.length - 1; a_idx++) {
                 var front = agents[a_idx];
                 var back = agents[a_idx + 1];
-                var diff = front.col - back.col;
-                if (diff <= -2) {
-                    if (back.row != front.row) {
-                        back.row = front.row;
+                // If back is out of range of front, then move back.
+                if (!in_range(front, back)) {
+                    // If not same row, then move diagonally
+                    if (front.row != back.row) {
+                        var diff = (front.row > back.row) ? 1 : -1;
+                        back.row += diff;
                     }
-                    back.col -= 1;
-                    if (a_idx == 8) {
+                    if (front.col != back.col) {
+                        var diff = (front.col > back.col) ? 1 : -1;
+                        back.col += diff;
+                    }
+                    if (a_idx + 1 == tail_idx) {
                         matrix[back.row][back.col] = 'X';
                     }
                 }
@@ -291,7 +285,7 @@ function move_rope(agents, dir) {
     return agents;
 }
 function count_visited() {
-    var total = 1; // Starting point
+    var total = 0;
     for (var row = 0; row < matrix_height; row++) {
         for (var col = 0; col < matrix_width; col++) {
             if (matrix[row][col] == 'X') {
@@ -317,14 +311,15 @@ function print_matrix(matrix) {
     fs.appendFileSync('.logs.txt', output);
 }
 function write_positions(agents) {
-    clear_matrix();
-    for (var i = 0; i < agents.length; i++) {
+    //clear_matrix();
+    matrix[m_start_r][m_start_c] = 's';
+    for (var i = agents.length - 1; i >= 0; i--) {
         var agent = agents[i];
         if (i == 0) {
             matrix[agent.row][agent.col] = 'H';
         }
         else {
-            matrix[agent.row][agent.col] = "" + i;
+            matrix[agent.row][agent.col] = i.toString();
         }
     }
 }
@@ -341,19 +336,23 @@ function part1() {
     console.log("Tail visited : " + count_visited());
 }
 function part2() {
-    var dirs = get_directions(test.split('\n'));
+    var dirs = get_directions(input);
     clear_log();
     var agents = [];
     for (var a = 0; a < 10; a++) {
         agents.push({ row: m_start_r, col: m_start_c });
     }
+    // Init start position
+    //let tailidx = agents.length-1;
+    matrix[agents[0].row][agents[0].col] = 'X';
     for (var _i = 0, dirs_2 = dirs; _i < dirs_2.length; _i++) {
         var d = dirs_2[_i];
         agents = move_rope(agents, d);
     }
+    //print_matrix(matrix);
+    console.log("Tail visited : " + count_visited());
     write_positions(agents);
     print_matrix(matrix);
-    console.log("Tail visited : " + count_visited());
 }
 // Number of positions visited
 //part1();

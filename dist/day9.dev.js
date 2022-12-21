@@ -5,18 +5,8 @@ exports.__esModule = true;
 var fs = require("fs");
 
 var input = fs.readFileSync('day9.txt', 'utf8').split('\r\n');
-/*
-var testinput = `R 5
-U 8
-L 8
-D 3
-R 17
-D 10
-L 25
-U 20`;
-*/
-
-var test = "L 4\nU 4";
+var test1 = "R 5\nU 8\nL 8";
+var test2 = "R 5\nU 8\nL 8\nD 3\nR 17\nD 10\nL 25\nU 20";
 /*
 var matrix_height = 300;
 var matrix_width = 250;
@@ -24,8 +14,8 @@ var m_start_r = 100;
 var m_start_c = 200;
 */
 
-var matrix_height = 15;
-var matrix_width = 15;
+var matrix_height = 30;
+var matrix_width = 30;
 var m_start_r = Math.floor(matrix_height / 2);
 var m_start_c = Math.floor(matrix_width / 2);
 var matrix = load_matrix();
@@ -244,11 +234,12 @@ function in_range(f_agent, b_agent) {
 }
 
 function move_rope(agents, dir) {
+  var tail_idx = agents.length - 1;
+
   if (dir.direction == 'U') {
-    for (var i = 0; i < dir.moves; i++) {
+    for (var d = 0; d < dir.moves; d++) {
       // Move head. 
       agents[0].row -= 1;
-      write_positions(agents);
 
       for (var a_idx = 0; a_idx < agents.length - 1; a_idx++) {
         var front = agents[a_idx];
@@ -256,32 +247,28 @@ function move_rope(agents, dir) {
 
         if (!in_range(front, back)) {
           // If not same col, then move diagonally
+          if (front.row != back.row) {
+            var diff = front.row > back.row ? 1 : -1;
+            back.row += diff;
+          }
+
           if (front.col != back.col) {
             var diff = front.col > back.col ? 1 : -1;
             back.col += diff;
-            back.row -= 1;
-          } else {
-            // Else just move the row
-            back.row -= 1;
           }
         }
 
-        write_positions(agents);
-
-        if (a_idx == 8) {
+        if (a_idx + 1 == tail_idx) {
           matrix[back.row][back.col] = 'X';
         }
       }
     }
-
-    write_positions(agents);
   }
 
   if (dir.direction == 'D') {
-    for (var i = 0; i < dir.moves; i++) {
+    for (var d = 0; d < dir.moves; d++) {
       // Move head. 
-      agents[0].row -= 1;
-      write_positions(agents);
+      agents[0].row += 1;
 
       for (var a_idx = 0; a_idx < agents.length - 1; a_idx++) {
         var front = agents[a_idx];
@@ -289,18 +276,18 @@ function move_rope(agents, dir) {
 
         if (!in_range(front, back)) {
           // If not same col, then move diagonally
+          if (front.row != back.row) {
+            var diff = front.row > back.row ? 1 : -1;
+            back.row += diff;
+          }
+
           if (front.col != back.col) {
-            back.col += 1;
-            back.row -= 1;
-          } else {
-            // Else just move the row
-            back.row -= 1;
+            var diff = front.col > back.col ? 1 : -1;
+            back.col += diff;
           }
         }
 
-        write_positions(agents);
-
-        if (a_idx == 8) {
+        if (a_idx + 1 == tail_idx) {
           matrix[back.row][back.col] = 'X';
         }
       }
@@ -308,25 +295,28 @@ function move_rope(agents, dir) {
   }
 
   if (dir.direction == 'R') {
-    for (var i = 0; i < dir.moves; i++) {
-      var head = agents[0];
-      head.col += 1;
+    for (var d = 0; d < dir.moves; d++) {
+      agents[0].col += 1;
 
       for (var a_idx = 0; a_idx < agents.length - 1; a_idx++) {
         var front = agents[a_idx];
-        var back = agents[a_idx + 1];
-        var diff = front.col - back.col;
+        var back = agents[a_idx + 1]; // If back is out of range of front, then move back.
 
-        if (diff >= 2) {
-          if (back.row != front.row) {
-            back.row = front.row;
+        if (!in_range(front, back)) {
+          // If not same row, then move diagonally
+          if (front.row != back.row) {
+            var diff = front.row > back.row ? 1 : -1;
+            back.row += diff;
           }
 
-          back.col += 1;
-
-          if (a_idx == 8) {
-            matrix[back.row][back.col] = 'X';
+          if (front.col != back.col) {
+            var diff = front.col > back.col ? 1 : -1;
+            back.col += diff;
           }
+        }
+
+        if (a_idx + 1 == tail_idx) {
+          matrix[back.row][back.col] = 'X';
         }
       }
     }
@@ -334,24 +324,29 @@ function move_rope(agents, dir) {
 
   if (dir.direction == 'L') {
     for (var i = 0; i < dir.moves; i++) {
-      var head = agents[0];
-      head.col -= 1;
+      agents[0].col -= 1;
 
       for (var a_idx = 0; a_idx < agents.length - 1; a_idx++) {
         var front = agents[a_idx];
-        var back = agents[a_idx + 1];
-        var diff = front.col - back.col;
+        var back = agents[a_idx + 1]; // If back is out of range of front, then move back.
 
-        if (diff <= -2) {
-          if (back.row != front.row) {
-            back.row = front.row;
+        if (!in_range(front, back)) {
+          // If not same row, then move diagonally
+          if (front.row != back.row) {
+            var diff = front.row > back.row ? 1 : -1;
+            back.row += diff;
           }
 
-          back.col -= 1;
-
-          if (a_idx == 8) {
-            matrix[back.row][back.col] = 'X';
+          if (front.col != back.col) {
+            var diff = front.col > back.col ? 1 : -1;
+            back.col += diff;
           }
+        }
+
+        write_positions(agents);
+
+        if (a_idx + 1 == tail_idx) {
+          matrix[back.row][back.col] = 'X';
         }
       }
     }
@@ -396,14 +391,15 @@ function print_matrix(matrix) {
 
 function write_positions(agents) {
   clear_matrix();
+  matrix[m_start_r][m_start_c] = 's';
 
-  for (var i = 0; i < agents.length; i++) {
+  for (var i = agents.length - 1; i >= 0; i--) {
     var agent = agents[i];
 
     if (i == 0) {
       matrix[agent.row][agent.col] = 'H';
     } else {
-      matrix[agent.row][agent.col] = "".concat(i);
+      matrix[agent.row][agent.col] = i.toString();
     }
   }
 }
@@ -431,7 +427,7 @@ function part1() {
 }
 
 function part2() {
-  var dirs = get_directions(test.split('\n'));
+  var dirs = get_directions(test1.split('\n'));
   clear_log();
   var agents = [];
 
@@ -440,16 +436,20 @@ function part2() {
       row: m_start_r,
       col: m_start_c
     });
-  }
+  } // Init start position
+  //let tailidx = agents.length-1;
+  //matrix[agents[0].row][agents[0].col] = 'X';
+
 
   for (var _i = 0, dirs_2 = dirs; _i < dirs_2.length; _i++) {
     var d = dirs_2[_i];
     agents = move_rope(agents, d);
-  }
+  } //print_matrix(matrix);
 
+
+  console.log("Tail visited : ".concat(count_visited()));
   write_positions(agents);
   print_matrix(matrix);
-  console.log("Tail visited : ".concat(count_visited()));
 } // Number of positions visited
 //part1();
 
