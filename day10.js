@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 var fs = require("fs");
 var input = fs.readFileSync('day10.txt', 'utf8').split('\r\n');
 var test1 = "noop\naddx 3\naddx -5";
@@ -87,7 +87,7 @@ var ElfProgram = /** @class */ (function () {
             this.screen[row][col] = char;
         }
         catch (_a) {
-            console.log("Failed to write at [" + row + "][" + col + "]");
+            console.log("Failed to write at [".concat(row, "][").concat(col, "]"));
         }
         this.char_counter++;
     };
@@ -104,7 +104,7 @@ var ElfProgram = /** @class */ (function () {
         for (var reg in this.register) {
             sum += this.register[reg];
         }
-        console.log("Sum of cycles : " + sum);
+        console.log("Sum of cycles : ".concat(sum));
     };
     return ElfProgram;
 }());
