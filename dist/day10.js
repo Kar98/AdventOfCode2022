@@ -4,12 +4,6 @@ var fs = require("fs");
 var input = fs.readFileSync('day10.txt', 'utf8').split('\r\n');
 var test1 = "noop\naddx 3\naddx -5";
 var test2 = fs.readFileSync('day10test.txt', 'utf8').split('\r\n');
-function test() {
-    var arr = [20, 40, 60];
-    if (arr.includes(20)) {
-        console.log('found 20');
-    }
-}
 var ElfProgram = /** @class */ (function () {
     function ElfProgram() {
         this.char_counter = 0;
@@ -77,9 +71,6 @@ var ElfProgram = /** @class */ (function () {
         var row = this.row_counter;
         // Find out what col to write to 
         var col = this.cycle - (40 * row);
-        if (col == -1) {
-            console.log();
-        }
         // Find which character to write
         var char = (sprite_pos - 1 == col || sprite_pos == col || sprite_pos + 1 == col) ? '#' : '.';
         // Write char to screen

@@ -6,13 +6,6 @@ addx 3
 addx -5`;
 var test2 = fs.readFileSync('day10test.txt', 'utf8').split('\r\n');
 
-function test(){
-    let arr = [20,40,60];
-    if(arr.includes(20)){
-        console.log('found 20');
-    }
-}
-
 class ElfProgram{
     cycle: number;
     X: number;
@@ -96,9 +89,6 @@ class ElfProgram{
         let row = this.row_counter;
         // Find out what col to write to 
         let col = this.cycle - (40*row);
-        if(col == -1){
-            console.log();
-        }
         // Find which character to write
         let char = (sprite_pos-1 == col || sprite_pos == col || sprite_pos+1 == col) ? '#' : '.';
         // Write char to screen

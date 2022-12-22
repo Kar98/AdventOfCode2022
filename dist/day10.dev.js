@@ -20,6 +20,8 @@ var ElfProgram =
 /** @class */
 function () {
   function ElfProgram() {
+    this.char_counter = 0;
+    this.row_counter = 0;
     this.cycle = 1;
     this.X = 1;
     this.register = {};
@@ -78,23 +80,24 @@ function () {
 
   ElfProgram.prototype.addx = function (value) {
     this.increment_cycle();
-    this.increment_cycle();
     this.X += value;
+    this.increment_cycle();
   };
 
   ElfProgram.prototype.write_pixel = function () {
     var sprite_pos = this.X; // The cycle is the char position to write to . 
     // Find what row we need to write to .
 
-    var row = Math.floor(this.cycle / 40);
-    var col = this.cycle - 39 * row - 1;
+    if (this.char_counter == 40) {
+      this.row_counter++;
+      this.char_counter = 0;
+    }
 
-    if (col == -1) {
-      console.log();
-    } // Find which character to write
+    var row = this.row_counter; // Find out what col to write to 
 
+    var col = this.cycle - 40 * row; // Find which character to write
 
-    var _char = sprite_pos - 1 == this.cycle || sprite_pos == this.cycle || sprite_pos + 1 == this.cycle ? '#' : '.'; // Write char to screen
+    var _char = sprite_pos - 1 == col || sprite_pos == col || sprite_pos + 1 == col ? '#' : '.'; // Write char to screen
 
 
     try {
@@ -102,6 +105,8 @@ function () {
     } catch (_a) {
       console.log("Failed to write at [".concat(row, "][").concat(col, "]"));
     }
+
+    this.char_counter++;
   };
 
   ElfProgram.prototype.increment_cycle = function () {
@@ -127,27 +132,27 @@ function () {
   return ElfProgram;
 }();
 
-function part1() {
+function part1(set) {
   var program = new ElfProgram();
 
-  for (var _i = 0, input_1 = input; _i < input_1.length; _i++) {
-    var instruction = input_1[_i];
+  for (var _i = 0, set_1 = set; _i < set_1.length; _i++) {
+    var instruction = set_1[_i];
     program.run(instruction);
   }
 
   program.print_sum();
 }
 
-function part2() {
+function part2(set) {
   var program = new ElfProgram();
 
-  for (var _i = 0, test2_1 = test2; _i < test2_1.length; _i++) {
-    var instruction = test2_1[_i];
+  for (var _i = 0, set_2 = set; _i < set_2.length; _i++) {
+    var instruction = set_2[_i];
     program.run(instruction);
   }
 
   program.dump_screen();
-} //part1();
+}
 
-
-part2(); //test();
+part1(input);
+part2(input); //test();
