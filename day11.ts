@@ -10,16 +10,16 @@ class Monkey{
     index: number;
     items: number[];
     operation: Function;
-    test: number;
+    divisor: number;
     true_monkey: number;
     false_monkey: number;
     items_inspected: number;
 
-    constructor(index: number, items: number[], operation: Function, test: number, truem: number, falsem: number){
+    constructor(index: number, items: number[], operation: Function, divisor: number, truem: number, falsem: number){
         this.index = index;
         this.items = items;
         this.operation = operation;
-        this.test = test;
+        this.divisor = divisor;
         this.true_monkey = truem;
         this.false_monkey = falsem;
         this.items_inspected = 0;
@@ -31,7 +31,7 @@ class Monkey{
         for(let item_idx = 0; item_idx < this.items.length;item_idx++){
             this.items[item_idx] = this.operation(this.items[item_idx]);
             this.items[item_idx] = Math.floor(this.items[item_idx] / 3);
-            let to_monkey = (this.items[item_idx] % this.test == 0) ? this.true_monkey : this.false_monkey;
+            let to_monkey = (this.items[item_idx] % this.divisor == 0) ? this.true_monkey : this.false_monkey;
             actions.push({monkey_to_throw_to: to_monkey, item_value: this.items[item_idx]});
             this.items_inspected++;
         }
@@ -44,7 +44,7 @@ class Monkey{
         for(let item_idx = 0; item_idx < this.items.length;item_idx++){
             let item = this.items[item_idx];
             let value = this.operation(item) % modulo;
-            let to_monkey = (value % this.test == 0) ? this.true_monkey : this.false_monkey;
+            let to_monkey = (value % this.divisor == 0) ? this.true_monkey : this.false_monkey;
             actions.push({monkey_to_throw_to: to_monkey, item_value: item});
             this.items_inspected++;
         }
@@ -120,7 +120,7 @@ function part1(){
 function part2(){
     let monkeys = setup_test_monkeys();
     let rounds = 1000;
-    modulo = monkeys.reduce((a, b) => a * b.test, 1);
+    modulo = monkeys.reduce((a, b) => a * b.divisor, 1);
 
     for(let r = 1;r < rounds+1;r++){
         for(let m_idx = 0; m_idx < monkeys.length; m_idx++){

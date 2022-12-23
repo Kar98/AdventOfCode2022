@@ -4,11 +4,11 @@ var fs = require("fs");
 var input = fs.readFileSync('day11.txt', 'utf8').split('\r\n');
 var modulo = 1;
 var Monkey = /** @class */ (function () {
-    function Monkey(index, items, operation, test, truem, falsem) {
+    function Monkey(index, items, operation, divisor, truem, falsem) {
         this.index = index;
         this.items = items;
         this.operation = operation;
-        this.test = test;
+        this.divisor = divisor;
         this.true_monkey = truem;
         this.false_monkey = falsem;
         this.items_inspected = 0;
@@ -18,7 +18,7 @@ var Monkey = /** @class */ (function () {
         for (var item_idx = 0; item_idx < this.items.length; item_idx++) {
             this.items[item_idx] = this.operation(this.items[item_idx]);
             this.items[item_idx] = Math.floor(this.items[item_idx] / 3);
-            var to_monkey = (this.items[item_idx] % this.test == 0) ? this.true_monkey : this.false_monkey;
+            var to_monkey = (this.items[item_idx] % this.divisor == 0) ? this.true_monkey : this.false_monkey;
             actions.push({ monkey_to_throw_to: to_monkey, item_value: this.items[item_idx] });
             this.items_inspected++;
         }
@@ -30,7 +30,7 @@ var Monkey = /** @class */ (function () {
         for (var item_idx = 0; item_idx < this.items.length; item_idx++) {
             var item = this.items[item_idx];
             var value = this.operation(item) % modulo;
-            var to_monkey = (value % this.test == 0) ? this.true_monkey : this.false_monkey;
+            var to_monkey = (value % this.divisor == 0) ? this.true_monkey : this.false_monkey;
             actions.push({ monkey_to_throw_to: to_monkey, item_value: item });
             this.items_inspected++;
         }
@@ -100,7 +100,7 @@ function part1() {
 function part2() {
     var monkeys = setup_test_monkeys();
     var rounds = 1000;
-    modulo = monkeys.reduce(function (a, b) { return a * b.test; }, 1);
+    modulo = monkeys.reduce(function (a, b) { return a * b.divisor; }, 1);
     for (var r = 1; r < rounds + 1; r++) {
         for (var m_idx = 0; m_idx < monkeys.length; m_idx++) {
             var current_monkey = monkeys[m_idx];
